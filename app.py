@@ -437,24 +437,34 @@ About {pct:.0f}% of the computers in the dataset cost less.</div>
 
         # ---- optional currency view (display only; the model output above never changes)
         st.markdown("#### Currency view (optional)")
-        base = st.selectbox("The dataset does not document its currency. Treat its prices as:",
-                            ["Not specified (no conversion)"] + core.CURRENCIES, key="fx_base")
+        st.caption("The dataset files do not state a currency. Pick the currency you believe the prices are in "
+                   "(USD is a common assumption, but it is only an assumption), then the currency to show.")
+        c_a, c_b = st.columns(2)
+        with c_a:
+            base = st.selectbox("Dataset prices are in", ["Not specified (no conversion)"] + core.CURRENCIES,
+                                index=1, key="fx_base")
         if base != "Not specified (no conversion)":
-            target = st.selectbox("Show estimate in", core.CURRENCIES, index=core.CURRENCIES.index("PKR"), key="fx_target")
-            live = get_live_rate(base, target)
-            if live:
-                rate, source_txt = live["rate"], f"Live rate from {live['source']} - updated {live['date']}"
+            with c_b:
+                target = st.selectbox("Show estimate in", core.CURRENCIES, index=core.CURRENCIES.index("PKR"), key="fx_target")
+            if base == target:
+                st.info("Both currencies are the same, so no conversion is applied. Choose a different 'Show estimate in' currency.")
             else:
-                st.info("Live exchange rates are unavailable right now. Enter a rate yourself - it is only used for this display.")
-                rate = st.number_input(f"Manual rate: 1 {base} = ? {target}", min_value=0.0, value=0.0, step=0.01, format="%.4f", key="fx_manual")
-                source_txt = "Manual rate entered by you (not a live rate)"
-            if rate and rate > 0:
-                st.markdown(f"**{core.format_price(core.convert(price, rate))} {target}**  \n"
-                            f"<span style='color:{core.MUTED};font-size:.85rem'>Assumes the dataset prices are in {base} (an assumption, not "
-                            f"documented). 1 {base} = {rate:,.4f} {target}. {source_txt}. Original estimate: "
-                            f"{core.format_price(price)} price units.</span>", unsafe_allow_html=True)
-            else:
-                st.caption("Enter a rate above 0 to see the converted amount. The original estimate stays unchanged.")
+                live = get_live_rate(base, target)
+                if live:
+                    rate, source_txt = live["rate"], f"Live rate from {live['source']} - updated {live['date']}"
+                else:
+                    st.info("Live exchange rates are unavailable right now. Enter a rate yourself - it is only used for this display.")
+                    rate = st.number_input(f"Manual rate: 1 {base} = ? {target}", min_value=0.0, value=0.0, step=0.01,
+                                           format="%.4f", key="fx_manual")
+                    source_txt = "Manual rate entered by you (not a live rate)"
+                if rate and rate > 0:
+                    st.markdown(f"**Original estimate:** {core.format_price(price)} {base} (assumed)  \n"
+                                f"**Converted:** {core.format_price(core.convert(price, rate))} {target}  \n"
+                                f"<span style='color:{core.MUTED};font-size:.85rem'>Exchange rate used: 1 {base} = {rate:,.4f} {target}. "
+                                f"{source_txt}. Only the display changes; the model's prediction stays {core.format_price(price)} price units.</span>",
+                                unsafe_allow_html=True)
+                else:
+                    st.caption("Enter a rate above 0 to see the converted amount. The original estimate stays unchanged.")
     with r2:
         fig = core.gauge_figure(price, META)
         st.pyplot(fig)
