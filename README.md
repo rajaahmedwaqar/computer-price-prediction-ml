@@ -87,9 +87,6 @@ To retrain, open `TechValue_AI.ipynb` in Google Colab, upload `computer_prices_a
 - No hyper-parameter tuning was done, and the neural network beats Ridge by only about 1.4%.
 - Estimates are not guaranteed market prices.
 
-## Screenshots
-
-_Add screenshots of the running app to `assets/` and link them here._
 
 ## Credits
 
