@@ -1,0 +1,10 @@
+# Never commit credentials or the raw Kaggle files
+kaggle.json
+.kaggle/
+*.env
+.env
+data/*.csv
+computer_prices_*.csv
+sample_submission.csv
+__pycache__/
+.ipynb_checkpoints/

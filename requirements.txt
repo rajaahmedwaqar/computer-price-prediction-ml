@@ -1,0 +1,12 @@
+# --- needed to run the Streamlit app (app.py / core.py) ---
+streamlit>=1.40,<2
+scikit-learn==1.8.0      # must match the version that created model_artifacts/model.joblib
+numpy>=2.0
+pandas>=2.2
+matplotlib>=3.8
+joblib>=1.3
+requests>=2.31           # optional live exchange rates (the app works without network access)
+
+# --- additionally used by the notebook TechValue_AI.ipynb ---
+seaborn>=0.13
+tqdm>=4.66
